@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.makhzani.stock'
+    namespace 'com.example.makhzani'
     compileSdk 35
 
     defaultConfig {
-        applicationId "com.makhzani.stock"
+        applicationId "com.example.makhzani"
         minSdk 24
         targetSdk 35
         versionCode 1
