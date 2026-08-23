@@ -183,6 +183,37 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             new String[]{String.valueOf(itemId)}
         );
 
-        return result > 0;
-    }
+   return result > 0;
+}
+
+// تسجيل عملية جرد
+public long addInventoryMovement(
+        int itemId,
+        int systemQuantity,
+        int actualQuantity,
+        int difference,
+        String date,
+        String time,
+        String username) {
+
+    SQLiteDatabase db = getWritableDatabase();
+
+    ContentValues values = new ContentValues();
+
+    values.put("item_id", itemId);
+    values.put("type", "جرد");
+    values.put("quantity", actualQuantity);
+    values.put("balance_before", systemQuantity);
+    values.put("balance_after", actualQuantity);
+    values.put("date", date);
+    values.put("time", time);
+    values.put("username", username);
+
+    return db.insert(
+        "movements",
+        null,
+        values
+    );
+}
+
 }
