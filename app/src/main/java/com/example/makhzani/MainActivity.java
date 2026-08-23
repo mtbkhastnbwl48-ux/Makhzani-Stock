@@ -698,6 +698,15 @@ getIntent().getStringExtra("username")
         .setTitle("تفاصيل المادة")
         .setView(scroll)
         .setPositiveButton("إغلاق", null)
-        .show();
+.show();
 }
-   } 
+
+int parse(String s) {
+    try {
+        return Integer.parseInt(s.trim());
+    } catch (Exception e) {
+        return 0;
+    }
+}
+
+}
