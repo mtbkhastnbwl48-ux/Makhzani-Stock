@@ -770,20 +770,47 @@ void inventoryItem(int itemId) {
                 totalOut += amount;
             }
 
-            String movementText =
-                date + " - " + time +
-                "\n" +
-                (type.equals("إدخال") ? "📥 إدخال: " : "📤 إخراج: ") +
-                amount +
-                "\nالرصيد قبل: " +
-                before +
-                "\nالرصيد بعد: " +
-                after +
-                "\nالمستخدم: " +
-                (username == null || username.isEmpty()
-                    ? "غير معروف"
-                    : username) +
-                "\n";
+           String movementText;
+
+if (type.equals("جرد")) {
+
+    int difference = after - before;
+
+    movementText =
+        date + " - " + time +
+        "\n📋 جرد" +
+        "\nالرصيد بالنظام: " +
+        before +
+        "\nالكمية الفعلية: " +
+        after +
+        "\nالفرق: " +
+        (difference > 0 ? "+" : "") +
+        difference +
+        "\nالمستخدم: " +
+        (username == null || username.isEmpty()
+            ? "غير معروف"
+            : username) +
+        "\n";
+
+} else {
+
+    movementText =
+        date + " - " + time +
+        "\n" +
+        (type.equals("إدخال")
+            ? "📥 إدخال: "
+            : "📤 إخراج: ") +
+        amount +
+        "\nالرصيد قبل: " +
+        before +
+        "\nالرصيد بعد: " +
+        after +
+        "\nالمستخدم: " +
+        (username == null || username.isEmpty()
+            ? "غير معروف"
+            : username) +
+        "\n";
+}
 
             history.add(movementText);
 
