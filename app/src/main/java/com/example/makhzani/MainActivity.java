@@ -331,7 +331,7 @@ public class MainActivity extends Activity {
                     newQty,
                     date,
                     time,
-                    "admin"
+getIntent().getStringExtra("username")
                 );
 
                 refresh();
