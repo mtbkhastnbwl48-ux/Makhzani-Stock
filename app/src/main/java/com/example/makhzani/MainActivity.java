@@ -550,6 +550,138 @@ getIntent().getStringExtra("username")
         list.addView(row);
     }
 
+    // جرد المادة
+void inventoryItem(int itemId) {
+
+    Cursor cursor = db.getItem(itemId);
+
+    if (!cursor.moveToFirst()) {
+        cursor.close();
+        return;
+    }
+
+    String name = cursor.getString(
+        cursor.getColumnIndexOrThrow("name")
+    );
+
+    int systemQuantity = cursor.getInt(
+        cursor.getColumnIndexOrThrow("quantity")
+    );
+
+    cursor.close();
+
+    EditText actual = new EditText(this);
+
+    actual.setHint(
+        "الكمية الموجودة فعلياً"
+    );
+
+    actual.setInputType(2);
+
+    LinearLayout box = new LinearLayout(this);
+
+    box.setOrientation(
+        LinearLayout.VERTICAL
+    );
+
+    TextView current = new TextView(this);
+
+    current.setText(
+        "الرصيد بالنظام: " +
+        systemQuantity
+    );
+
+    current.setTextSize(18);
+    current.setPadding(10, 10, 10, 20);
+
+    box.addView(current);
+    box.addView(actual);
+
+    new AlertDialog.Builder(this)
+
+        .setTitle(
+            "📋 جرد: " + name
+        )
+
+        .setView(box)
+
+        .setPositiveButton(
+            "حفظ الجرد",
+            (d, w) -> {
+
+                int actualQuantity =
+                    parse(
+                        actual.getText().toString()
+                    );
+
+                if (actualQuantity < 0) {
+
+                    Toast.makeText(
+                        this,
+                        "أدخل كمية صحيحة",
+                        Toast.LENGTH_SHORT
+                    ).show();
+
+                    return;
+                }
+
+                int difference =
+                    actualQuantity -
+                    systemQuantity;
+
+                int newBalance =
+                    actualQuantity;
+
+                db.updateQuantity(
+                    itemId,
+                    newBalance
+                );
+
+                String date =
+                    new SimpleDateFormat(
+                        "yyyy-MM-dd",
+                        Locale.getDefault()
+                    ).format(new Date());
+
+                String time =
+                    new SimpleDateFormat(
+                        "HH:mm:ss",
+                        Locale.getDefault()
+                    ).format(new Date());
+
+                String username =
+                    getIntent().getStringExtra(
+                        "username"
+                    );
+
+                db.addInventoryMovement(
+                    itemId,
+                    systemQuantity,
+                    actualQuantity,
+                    difference,
+                    date,
+                    time,
+                    username
+                );
+
+                refresh();
+
+                Toast.makeText(
+                    this,
+                    "تم حفظ الجرد\nالفرق: " +
+                    difference,
+                    Toast.LENGTH_LONG
+                ).show();
+            }
+        )
+
+        .setNegativeButton(
+            "إلغاء",
+            null
+        )
+
+        .show();
+}
     // تفاصيل المادة
   void showItemDetails(int itemId) {
 
