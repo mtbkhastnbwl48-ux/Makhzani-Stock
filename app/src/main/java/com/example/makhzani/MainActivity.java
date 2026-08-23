@@ -551,111 +551,152 @@ getIntent().getStringExtra("username")
     }
 
     // تفاصيل المادة
-    void showItemDetails(int itemId) {
+  void showItemDetails(int itemId) {
 
-        Cursor cursor =
-            db.getItem(itemId);
+    Cursor cursor = db.getItem(itemId);
 
-        if (!cursor.moveToFirst()) {
-
-            cursor.close();
-            return;
-        }
-
-        String name =
-            cursor.getString(
-                cursor.getColumnIndexOrThrow("name")
-            );
-
-        String code =
-            cursor.getString(
-                cursor.getColumnIndexOrThrow("code")
-            );
-
-        int qty =
-            cursor.getInt(
-                cursor.getColumnIndexOrThrow("quantity")
-            );
-
+    if (!cursor.moveToFirst()) {
         cursor.close();
-
-        Cursor movements =
-            db.getMovements(itemId);
-
-        StringBuilder text =
-            new StringBuilder();
-
-        text.append("المادة: ")
-            .append(name)
-            .append("\n");
-
-        text.append("الكود: ")
-            .append(
-                code == null || code.isEmpty()
-                    ? "بدون كود"
-                    : code
-            )
-            .append("\n");
-
-        text.append("الرصيد الحالي: ")
-            .append(qty)
-            .append("\n\n");
-
-        int totalIn = 0;
-        int totalOut = 0;
-
-        if (movements.moveToFirst()) {
-
-            do {
-
-                String type =
-                    movements.getString(
-                        movements.getColumnIndexOrThrow(
-                            "type"
-                        )
-                    );
-
-                int amount =
-                    movements.getInt(
-                        movements.getColumnIndexOrThrow(
-                            "quantity"
-                        )
-                    );
-
-                if (type.equals("إدخال")) {
-                    totalIn += amount;
-                } else if (type.equals("إخراج")) {
-                    totalOut += amount;
-                }
-
-            } while (movements.moveToNext());
-        }
-
-        movements.close();
-
-        text.append("إجمالي الداخل: ")
-            .append(totalIn)
-            .append("\n");
-
-        text.append("إجمالي الخارج: ")
-            .append(totalOut)
-            .append("\n");
-
-        new AlertDialog.Builder(this)
-            .setTitle("تفاصيل المادة")
-            .setMessage(text.toString())
-            .setPositiveButton("إغلاق", null)
-            .show();
+        return;
     }
 
-    int parse(String s) {
+    String name = cursor.getString(
+        cursor.getColumnIndexOrThrow("name")
+    );
 
-        try {
-            return Integer.parseInt(
-                s.trim()
+    String code = cursor.getString(
+        cursor.getColumnIndexOrThrow("code")
+    );
+
+    int qty = cursor.getInt(
+        cursor.getColumnIndexOrThrow("quantity")
+    );
+
+    cursor.close();
+
+    Cursor movements = db.getMovements(itemId);
+
+    StringBuilder text = new StringBuilder();
+
+    text.append("المادة: ")
+        .append(name)
+        .append("\n");
+
+    text.append("الكود: ")
+        .append(
+            code == null || code.isEmpty()
+                ? "بدون كود"
+                : code
+        )
+        .append("\n");
+
+    text.append("الرصيد الحالي: ")
+        .append(qty)
+        .append("\n\n");
+
+    int totalIn = 0;
+    int totalOut = 0;
+
+    ArrayList<String> history =
+        new ArrayList<>();
+
+    if (movements.moveToFirst()) {
+
+        do {
+
+            String type = movements.getString(
+                movements.getColumnIndexOrThrow("type")
             );
-        } catch (Exception e) {
-            return 0;
+
+            int amount = movements.getInt(
+                movements.getColumnIndexOrThrow("quantity")
+            );
+
+            int before = movements.getInt(
+                movements.getColumnIndexOrThrow("balance_before")
+            );
+
+            int after = movements.getInt(
+                movements.getColumnIndexOrThrow("balance_after")
+            );
+
+            String date = movements.getString(
+                movements.getColumnIndexOrThrow("date")
+            );
+
+            String time = movements.getString(
+                movements.getColumnIndexOrThrow("time")
+            );
+
+            String username = movements.getString(
+                movements.getColumnIndexOrThrow("username")
+            );
+
+            if (type.equals("إدخال")) {
+                totalIn += amount;
+            } else if (type.equals("إخراج")) {
+                totalOut += amount;
+            }
+
+            String movementText =
+                date + " - " + time +
+                "\n" +
+                (type.equals("إدخال") ? "📥 إدخال: " : "📤 إخراج: ") +
+                amount +
+                "\nالرصيد قبل: " +
+                before +
+                "\nالرصيد بعد: " +
+                after +
+                "\nالمستخدم: " +
+                (username == null || username.isEmpty()
+                    ? "غير معروف"
+                    : username) +
+                "\n";
+
+            history.add(movementText);
+
+        } while (movements.moveToNext());
+    }
+
+    movements.close();
+
+    text.append("إجمالي الداخل: ")
+        .append(totalIn)
+        .append("\n");
+
+    text.append("إجمالي الخارج: ")
+        .append(totalOut)
+        .append("\n\n");
+
+    text.append("──── سجل الحركات ────\n\n");
+
+    if (history.isEmpty()) {
+
+        text.append("لا توجد حركات مسجلة.");
+
+    } else {
+
+        for (String movement : history) {
+
+            text.append(movement);
+            text.append("\n--------------------\n\n");
         }
     }
+
+    ScrollView scroll = new ScrollView(this);
+
+    TextView details = new TextView(this);
+
+    details.setText(text.toString());
+    details.setTextSize(17);
+    details.setPadding(25, 25, 25, 25);
+    details.setTextDirection(View.TEXT_DIRECTION_RTL);
+
+    scroll.addView(details);
+
+    new AlertDialog.Builder(this)
+        .setTitle("تفاصيل المادة")
+        .setView(scroll)
+        .setPositiveButton("إغلاق", null)
+        .show();
 }
