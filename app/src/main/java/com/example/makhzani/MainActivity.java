@@ -826,11 +826,14 @@ void inventoryItem(int itemId) {
 
     scroll.addView(details);
 
-    new AlertDialog.Builder(this)
-        .setTitle("تفاصيل المادة")
-        .setView(scroll)
-        .setPositiveButton("إغلاق", null)
-.show();
+new AlertDialog.Builder(this)
+    .setTitle("تفاصيل المادة")
+    .setView(scroll)
+    .setPositiveButton("إغلاق", null)
+    .setNeutralButton("📋 جرد المادة", (dialog, which) -> {
+        inventoryItem(itemId);
+    })
+    .show();
 }
 
 int parse(String s) {
