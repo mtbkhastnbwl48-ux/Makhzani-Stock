@@ -218,9 +218,11 @@ public long addInventoryMovement(
     values.put("time", time);
     values.put("username", username);
 
-    return db.insert(
+   return db.insert(
         "movements",
         null,
         values
     );
+}
+
 }
