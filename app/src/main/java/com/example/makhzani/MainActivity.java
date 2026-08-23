@@ -700,3 +700,4 @@ getIntent().getStringExtra("username")
         .setPositiveButton("إغلاق", null)
         .show();
 }
+   } 
