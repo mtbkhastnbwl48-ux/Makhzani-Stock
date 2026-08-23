@@ -201,10 +201,19 @@ public long addInventoryMovement(
     ContentValues values = new ContentValues();
 
     values.put("item_id", itemId);
+
+    // نوع الحركة
     values.put("type", "جرد");
+
+    // نخزن الكمية الفعلية
     values.put("quantity", actualQuantity);
+
+    // الرصيد قبل الجرد
     values.put("balance_before", systemQuantity);
+
+    // الرصيد بعد الجرد
     values.put("balance_after", actualQuantity);
+
     values.put("date", date);
     values.put("time", time);
     values.put("username", username);
@@ -214,6 +223,4 @@ public long addInventoryMovement(
         null,
         values
     );
-}
-
 }
